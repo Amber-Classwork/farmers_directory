@@ -5,17 +5,17 @@ const { generateJWTToken } = require("../utilities/tokenGenerator");
 class AuthController {
    static authenticate = async (req, res, next) => {
       try {
-         let { username, password } = req.body;
-         let user = await User.findOne({ username: username });
+         let { email, password } = req.body;
+         let user = await User.findOne({ email: email });
          if (!user)
-            throw new Error("No user present which matches the username");
+            throw new Error("No user present which matches the email");
          let passCheck = await user.isCorrectPassword(password);
          if (!passCheck) throw new Error("Invalid password");
          let data = user;
          data.password = undefined;
          data.isSuperAdmin = undefined;
          let token = generateJWTToken(
-            { id: user._id, username: user.username, isSuperAdmin: user.isSuperAdmin},
+            { id: user._id, email: user.email, isSuperAdmin: user.isSuperAdmin},
             "3600"
          );
 

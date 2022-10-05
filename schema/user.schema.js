@@ -143,7 +143,9 @@ userSchema.post(/^find/, async function(doc){
         }
     }else {
         if(!doc) return Promise.reject(new Error("No File found"));
-        if(!(this.op == "findOne" && this._conditions.username)) {
+
+        // checks to see if the operation is findOne and if there is an email in the conditions
+        if(!(this.op == "findOne" && this._conditions.email)) {
             doc = removeSensitiveFields(doc);
 
         }
