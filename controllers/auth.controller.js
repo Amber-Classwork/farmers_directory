@@ -12,13 +12,12 @@ class AuthController {
          let passCheck = await user.isCorrectPassword(password);
          if (!passCheck) throw new Error("Invalid password");
          let data = user;
-         data.password = undefined;
-         data.isSuperAdmin = undefined;
          let token = generateJWTToken(
-            { id: user._id, email: user.email, isSuperAdmin: user.isSuperAdmin},
-            "3600"
-         );
-
+             { id: user._id, email: user.email, isSuperAdmin: user.isSuperAdmin},
+             "3600"
+             );
+             data.password = undefined;
+            data.isSuperAdmin = undefined;
          JSONResponse.success(
             res,
             "User is authenticated successfully",
