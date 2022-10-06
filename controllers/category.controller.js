@@ -16,7 +16,7 @@ class CategoryController {
     static getCategoryById = async (req, res, next)=>{
         try{
             let id = req.params.id;
-            let category = await findById(id);
+            let category = await Category.findById(id);
             JSONResponse.success(res, "Successfully retrieved category", category, 200)
         }catch(error){
             JSONResponse.error(res, "Unable to retrieve category", error, 404);

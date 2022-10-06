@@ -9,11 +9,13 @@ const categorySchema = new Schema({
 
 
 categorySchema.pre("save", function(next){
-    // checks the data before save to ensure that it is not empty;
-    if(Object.keys(this).length == 0 ){
+    // checks the data before save to ensure that it is not empty besides _id and __v property;
+    console.log(this) 
+    if(Object.keys(this).length <= 1 ){
         return Promise.reject("Please provide data to create category");
     }
-})
+    next();
+});
 categorySchema.post(/^find/, function(doc){
 
     if(!Array.isArray(doc)) return;
