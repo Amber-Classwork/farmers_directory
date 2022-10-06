@@ -103,9 +103,10 @@ const userSchema = new Schema({
 
 // Middleware function to execute and hash password before saving user into the database.
 
-userSchema.pre("save", async function(){
+userSchema.pre("save", async function(next){
     try{
-        this.password = await bcrypt.hash(this.password, 10);
+        if(!this.isModified('password')) return next(); 
+        this.password = await bcrypt.hash(this.password,10);       
         this.isSuperAdmin = false;
     }catch(error){
         return Promise.reject(new Error(error.message));
@@ -114,20 +115,14 @@ userSchema.pre("save", async function(){
 });
 
 
-
-
-
-
 userSchema.post("save", async function(doc){
     doc = removeSensitiveFields(doc);
 });
 
-userSchema.post("findOneAndUpdate", async function(doc,next){    
+userSchema.pre("findOneAndUpdate", async function(next){    
     try{
-
-    doc.id_type = (doc.id_type) ?doc.id_type.toUpperCase():  undefined;
-    doc = await doc.save();
-    next()
+        this._update.password = await bcrypt.hash(this._update.password, 10)
+        next()
     }catch(error){
         return Promise.reject(new Error(error.message));
     }
@@ -163,5 +158,6 @@ userSchema.methods.isCorrectPassword = async function(password){
     let isCorrect = await bcrypt.compare(password, this.password);
     return isCorrect;
 }
+
 
 module.exports = model("User", userSchema);
