@@ -164,7 +164,7 @@ router
      *                                              example: Server error   
      * 
      */
-    .get(UserController.getUserProfile)
+    .get(Middleware.isAuthenticated,Middleware.isUserOrSuperAdmin,UserController.getUserProfile)
 
     /**
      *  @openapi
@@ -232,7 +232,7 @@ router
      *                                                                                                              type: string
      *                                                                                                              example: Server error
      */
-    .patch(UserController.updateUserProfile)
+    .patch(Middleware.isAuthenticated,Middleware.isUserOrSuperAdmin,UserController.updateUserProfile)
 
     /**
      *  @openapi
@@ -302,6 +302,6 @@ router
      *                                                                                                              example: Server error
      *  
      */
-    .delete(UserController.deleteUserProfile)
+    .delete(Middleware.isAuthenticated,Middleware.isUserOrSuperAdmin,UserController.deleteUserProfile)
     
 module.exports = router;
