@@ -121,8 +121,10 @@ userSchema.post("save", async function(doc){
 
 userSchema.pre("findOneAndUpdate", async function(next){    
     try{
-        this._update.password = await bcrypt.hash(this._update.password, 10)
-        next()
+        if(this._update.password) {
+
+            this._update.password = await bcrypt.hash(this._update.password, 10)
+        }
     }catch(error){
         return Promise.reject(new Error(error.message));
     }
