@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const ProductController = require('../controllers/products.controller');
+const ProductController = require('../controllers/product.controller');
 const { uploadFileToS3 } = require('../utilities/s3');
 
 router

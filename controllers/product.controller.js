@@ -1,4 +1,4 @@
-const Product = require("../schema/products.schema");
+const Product = require("../schema/product.schema");
 const { JSONResponse } = require("../utilities/jsonResponse");
 const { deleteObjectFromS3 } = require("../utilities/s3");
 
