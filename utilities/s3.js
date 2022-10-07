@@ -1,6 +1,7 @@
 const AWS = require("aws-sdk");
 const fs = require("fs");
 const multer = require("multer");
+// multer-s3 and aws-sdk should have same major release version. ie 2.x.x or 3.x.x
 const multerS3 = require("multer-s3");
 
 
@@ -38,18 +39,23 @@ const uploadFileToS3 = multer({
     })
 })
 
-const deleteObject = async (objectName)=>{
-    const params = {
-        Bucket : bucketName,
-        Key: objectName,
-    }
+const deleteObjectFromS3 = async (location)=>{
+        if(!location) return Promise.reject(new Error("No location was specified"))
+        let objectName = location.split('/').slice(-1)[0];
+        
+        const params = {
+            Bucket : bucketName,
+            Key: objectName,
+        }
+        try{
+            // checks to see if there is any errors with the file metadata.
+            await s3.headObject(params).promise();
 
-    try{
-        await s3.deleteObject(params).promise();
-        console.log("File deleted Successfully")
-    }catch(error){
-        console.log("Error in deleting file : " + JSON.stringify(error))
-    }
+            await s3.deleteObject(params).promise();
+
+        }catch(error){
+            return Promise.reject(new Error("File not found Error : " + error.code));
+        }
 }
 
 
@@ -60,7 +66,7 @@ const deleteObject = async (objectName)=>{
 
 module.exports = {
     uploadFileToS3,
-    deleteObject
+    deleteObjectFromS3
 }
 
 
