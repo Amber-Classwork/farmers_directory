@@ -9,6 +9,7 @@ class FarmerController {
    static authenticate = async (req, res, next) => {
       try {
          let { email, password } = req.body;
+         if(email) email = email.toLowerCase();
          let farmer = await Farmer.findOne({ email: email });
          if (!farmer)
             throw new Error("No farmer present which matches the email");
@@ -85,6 +86,7 @@ class FarmerController {
             if(Object.keys(data).length == 0) {
                 return JSONResponse.success(res, "No data passed, file not updated",{}, 200);
             }
+            if(data.email) data.email = data.email.toLowerCase();
             let farmer = await Farmer.findOneAndUpdate({_id:id},data, {new:true});
             if(!farmer) throw new Error("Farmer not found with the ID");
             JSONResponse.success(res, "Farmer updated successfully", farmer, 200);

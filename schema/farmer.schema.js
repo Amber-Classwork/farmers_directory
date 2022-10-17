@@ -19,7 +19,10 @@ const farmerSchema = new Schema({
     },
     email: {
         type: String, 
-        unique: [true, "Email already exist in the database"]
+        unique: true,
+        required: [true,"Email must be provided"],
+        lowercase: true
+
     },
     password: {
         type: String, 

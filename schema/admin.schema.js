@@ -1,7 +1,8 @@
 const {Schema, model} = require("mongoose");
+const bcrypt = require("bcrypt");
 
 adminSchema = new Schema({
-    email: {type: String,required: [true,"An email is required to creaet and account"]},
+    email: {type: String,required: [true,"An email is required to creaet and account"], lowercase:true},
     password: {type: String,required: [true,"Password is required"]},
     username: {type: String,required: [true,"Username is required"]}
 });

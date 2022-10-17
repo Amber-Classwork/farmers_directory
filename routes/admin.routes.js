@@ -7,7 +7,7 @@ router
 
 router
     .route("/")
-    .get(Middleware.isAuthenticated,AdminController.getAllAdmins)
+    .get(Middleware.isAuthenticated,Middleware.isAdmin,AdminController.getAllAdmins)
     .post(AdminController.createAdmin);
     
 router

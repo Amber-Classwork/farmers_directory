@@ -1,11 +1,12 @@
 const Admin = require("../schema/admin.schema");
 const { JSONResponse } = require("../utilities/jsonResponse");
 const { generateJWTToken } = require("../utilities/tokenGenerator");
-
+const {ObjectId} = require("mongoose").Types
 class AdminController {
    static authenticate = async (req, res, next) => {
       try {
          let { email, password } = req.body;
+         if(email) email = email.toLowerCase();
          let admin = await Admin.findOne({ email: email });
          if (!admin)
             throw new Error("No admin present which matches the email");
@@ -72,6 +73,7 @@ class AdminController {
             if(Object.keys(data).length == 0) {
                 return JSONResponse.success(res, "No data passed, file not updated",{}, 200);
             }
+            if(data.email) data.email = data.email.toLowerCase();
             let admin = await Admin.findOneAndUpdate({_id:id},data, {new:true});
             if(!admin) throw new Error("Admin not found with the ID");
             JSONResponse.success(res, "Admin updated successfully", admin, 200);
