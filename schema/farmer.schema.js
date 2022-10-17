@@ -74,11 +74,16 @@ farmerSchema.pre("findOneAndUpdate", async function(next){
     try{
         if(this._update.password) {
             this._update.password = await bcrypt.hash(this._update.password, 10)
+        }if(this._update.image){
+            getDocumentFromQueryAndDeleteImage(this);
         }
     }catch(error){
         return Promise.reject(new Error(error.message));
     }
-})
+});
+
+
+
 
 
 // had to do a bunch of acrobatics here. Not sure if it really is the best approach..highly doubt it. The latest condition is trying to zeroin on authenticating user to ensure that document password is not removed before it is processed;
@@ -99,6 +104,14 @@ farmerSchema.post(/^find/, async function(doc){
     }
 });
 
+async function getDocumentFromQueryAndDeleteImage(query){
+    let doc = await query.model.findOne(query.getQuery());
+    if (!doc) return Promise.reject(new Error("No user found with this ID"));
+    
+    if(doc.image){
+        await deleteObjectFromS3(doc.image)
+    }
+}
 
 function removeSensitiveFields(doc){
     doc.isSuperAdmin = undefined;

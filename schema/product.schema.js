@@ -10,21 +10,6 @@ const productSchema = new Schema({
     category:{
         type: Schema.Types.ObjectId, ref: "Category"
     },
-    prod_price: {type: Number},
-    prod_unit: {
-        type: String,
-        enum:{
-            values: ["DOZ", "LB","HALF-DOZ","TON", "LITRE","BUSHEL", "KG"],
-            message: "{VALUE} is not a valid product unit, you can select, 'DOZ', 'LB','HALF-DOZ','TON', 'LITRE','BUSHEL', 'KG' "
-        },
-        required: function(){
-            if(this.prod_price){
-                return true;
-            }else return false;
-        }
-    }
-
-
 
 });
 
