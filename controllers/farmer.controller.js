@@ -1,5 +1,6 @@
 const Farmer = require("../schema/farmer.schema");
 const { JSONResponse } = require("../utilities/jsonResponse");
+const { generateJWTToken } = require("../utilities/tokenGenerator");
 const { ObjectId } = require("mongoose").Types;
 
 class FarmerController {

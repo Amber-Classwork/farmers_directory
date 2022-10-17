@@ -9,13 +9,13 @@ router
     .post(FarmerController.authenticate)
 router
     .route("/")
-    .get(Middleware.isAuthenticated,Middleware.isSuperAdmin,FarmerController.getAllFarmers)
+    .get(Middleware.isAuthenticated,Middleware.isUserOrAdmin,FarmerController.getAllFarmers)
     .post(FarmerController.createFarmerProfile)
     
 router
     .route("/:id")
-    .get(Middleware.isAuthenticated,Middleware.isUserOrSuperAdmin,FarmerController.getFarmerProfile)
-    .patch(Middleware.isAuthenticated,Middleware.isUserOrSuperAdmin,FarmerController.updateFarmerProfile)
-    .delete(Middleware.isAuthenticated,Middleware.isUserOrSuperAdmin,FarmerController.deleteFarmerProfile)
+    .get(Middleware.isAuthenticated,Middleware.isUserOrAdmin,FarmerController.getFarmerProfile)
+    .patch(Middleware.isAuthenticated,Middleware.isUserOrAdmin,FarmerController.updateFarmerProfile)
+    .delete(Middleware.isAuthenticated,Middleware.isUserOrAdmin,FarmerController.deleteFarmerProfile)
     
 module.exports = router;

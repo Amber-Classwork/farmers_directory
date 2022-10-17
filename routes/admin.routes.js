@@ -12,9 +12,9 @@ router
     
 router
     .route("/:id")
-    .get(Middleware.isAuthenticated,AdminController.getAdmin)
-    .patch(Middleware.isAuthenticated,AdminController.updateAdmin)
-    .delete(Middleware.isAuthenticated,AdminController.deleteAdmin)
+    .get(Middleware.isAuthenticated, Middleware.isAdmin,AdminController.getAdmin)
+    .patch(Middleware.isAuthenticated, Middleware.isAdmin,AdminController.updateAdmin)
+    .delete(Middleware.isAuthenticated, Middleware.isAdmin,AdminController.deleteAdmin)
     
 
 module.exports = router;
