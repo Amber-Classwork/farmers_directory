@@ -12,7 +12,6 @@ const farmerSchema = new Schema({
     }, 
     farmer_type:{
         type: String, 
-        required: [true, "What type of farmer are you?"]
     },
     image: {
         type: String
