@@ -14,6 +14,10 @@ router.route("/requestPasswordReset")
 router.route("/resetPassword")
     .post(UserController.resetPassword);
 
+
+router.route("/login")
+    .post(UserController.authenticate);
+
 router
     .route("/:id")
         .all(Middleware.isAuthenticated, Middleware.isUserOrSuperAdmin)
