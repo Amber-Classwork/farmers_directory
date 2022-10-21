@@ -1,59 +1,47 @@
 const {model, Schema} = require("mongoose");
 const bcrypt = require("bcrypt");
+const emailer = require("../utilities/nodemailer.utility");
+const htmlCompiler = require("../utilities/compileHtml.utility");
 
-const farmerSchema = new Schema({
-    fname : {
+const userSchema = new Schema({
+    first_name : {
         type: String, 
-        unique: [true, "name already exist in the database"]
+        required:[true,"First name is a required field"]
     }, 
-    lname : {
+    last_name : {
         type: String, 
         required: [true, "Last name is a required field"]
     }, 
-    farmer_type:{
-        type: String, 
-    },
     image: {
         type: String
     },
     email: {
         type: String, 
         unique: true,
-        required: [true,"Email must be provided"],
-        lowercase: true
-
+        required:[true, "Email is a required field"]
+    },
+    address:{
+        city: {type: String},
+        street: {type:String},
+        parish: {type: String},
     },
     password: {
         type: String, 
         required: [true, "Password was not provided"]
     },
-    description: {
-        type: String, 
-        
-    },
-    address: {
-        street: {type: String},
-        city: {type: String},
-        parish: {type: String}
-    },
-    socials: {
-        website: {type: String},
-        facebook: {type: String},
-        instagram: {type: String},
-    },
-    phone: {type: String},
-
-    id_number: {
-        type: String,
-        required: [true, "ID must be present in order to be valid"]
-    },
+    phone: {type: String, required: [true, "Phone number was not provided"]},
+    isSuperAdmin:{
+        type: Boolean,
+        default: false,
+    }
+   
 
 });
 
 
 // Middleware function to execute and hash password before saving user into the database.
 
-farmerSchema.pre("save", async function(next){
+userSchema.pre("save", async function(next){
     try{
         if(!this.isModified('password')) return next(); 
         this.password = await bcrypt.hash(this.password,10);       
@@ -65,29 +53,32 @@ farmerSchema.pre("save", async function(next){
 });
 
 
-farmerSchema.post("save", async function(doc){
+userSchema.post("save", async function(doc){
     doc = removeSensitiveFields(doc);
 });
 
-farmerSchema.pre("findOneAndUpdate", async function(next){    
+userSchema.pre("findOneAndUpdate", async function(next){    
     try{
         if(this._update.password) {
             this._update.password = await bcrypt.hash(this._update.password, 10)
-        }if(this._update.image){
-            getDocumentFromQueryAndDeleteImage(this);
         }
     }catch(error){
         return Promise.reject(new Error(error.message));
     }
 });
 
+userSchema.methods.checkDupe = function () {
+	return new Promise(async (resolve, reject) => {
+		const dupe = await model('User')
+			.find({ email: this.email})
+			.catch((err) => {
+				reject(err)
+			})
+		resolve(dupe.length > 0)
+	})
+}
 
-
-
-
-// had to do a bunch of acrobatics here. Not sure if it really is the best approach..highly doubt it. The latest condition is trying to zeroin on authenticating user to ensure that document password is not removed before it is processed;
-
-farmerSchema.post(/^find/, async function(doc){
+userSchema.post(/^find/, async function(doc){
     if(Array.isArray(doc)){
         for(let file of doc){
             file = removeSensitiveFields(file);
@@ -103,14 +94,6 @@ farmerSchema.post(/^find/, async function(doc){
     }
 });
 
-async function getDocumentFromQueryAndDeleteImage(query){
-    let doc = await query.model.findOne(query.getQuery());
-    if (!doc) return Promise.reject(new Error("No user found with this ID"));
-    
-    if(doc.image){
-        await deleteObjectFromS3(doc.image)
-    }
-}
 
 function removeSensitiveFields(doc){
     doc.isSuperAdmin = undefined;
@@ -118,10 +101,25 @@ function removeSensitiveFields(doc){
     return doc
 }
 // Instance method to check for a password to compare a password with the encrypted password on the instance document.
-farmerSchema.methods.isCorrectPassword = async function(password){
+userSchema.methods.isCorrectPassword = async function(password){
     let isCorrect = await bcrypt.compare(password, this.password);
     return isCorrect;
 }
 
 
-module.exports = model("Farmer", farmerSchema);
+userSchema.methods.requestPasswordReset = async function(redirectLink){
+    console.log(this);
+    const data = {
+        user: {first_name: this.first_name, last_name: this.last_name},
+        redirectLink
+    }
+    try{
+        let html = htmlCompiler.compileHtml("password_reset",data);
+        await emailer.sendMail(this.email, "Password Reset",`Hello ${this.first_name} ${this.firstname}`,html);
+    }catch(error){
+        return Promise.reject(new Error(error));
+    }
+}
+
+
+module.exports = model("User", userSchema);
