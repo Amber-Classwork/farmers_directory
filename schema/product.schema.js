@@ -6,7 +6,6 @@ const productSchema = new Schema({
 
     prod_name: {type: String, required: [true,"Product name is a required property"]},
     prod_img: {type: String},
-    seller: {type: Schema.Types.ObjectId, ref:"User"},
     category:{
         type: Schema.Types.ObjectId, ref: "Category"
     },
