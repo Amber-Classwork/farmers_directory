@@ -1,6 +1,6 @@
-const { JSONResponse } = require("../utilities/jsonResponse");
+const { JSONResponse } = require("../../../utilities/response.utility");
 const JWT = require("jsonwebtoken");
-const Admin = require("../schema/admin.schema");
+
 class Middleware{
 
     /**
@@ -28,26 +28,17 @@ class Middleware{
             JSONResponse.error(res, "Unauthorized Access Attempted",error, 403); 
         }
     }
-    static isAdmin = async (req, res, next)=>{
-        try{
-            if(req.user){
-                let admins = await Admin.find({_id: req.user.id});
-    
-                if(admins.length == 0){
-                    throw new Error("User is not an admin"); 
-                }
-                next()
-            }else{
-                throw new Error("This user is not an admin");
-            }
-        }catch(error){
-            JSONResponse.error(res, "Unauthorized Access Attempted", error, 403);
+    static isSuperAdmin = (req, res, next)=>{
+        if(req.user.isSuperAdmin){
+            next()
+        }else{
+            JSONResponse.error(res, "Unauthorized Access Attempted", "You do not have the permission to access this data", 403);
         }
     }
 
-    static isUserOrAdmin = (req, res, next)=>{
+    static isUserOrSuperAdmin = (req, res, next)=>{
         if(req.params.id != req.user.id){
-            return this.isAdmin(req, res,next);
+            return this.isSuperAdmin(req, res,next);
         }else{
             next();
         }
