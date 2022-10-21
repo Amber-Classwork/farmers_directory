@@ -1,5 +1,7 @@
-const User = require("../../../schemas/user.schema");
-const { JSONResponse } = require("../../../utilities/response.utility");
+const User = require("../schema/user.schema");
+const { JSONResponse } = require("../utilities/jsonResponse");
+const { generateJWTToken } = require("../utilities/tokenGenerator");
+
 const { ObjectId } = require("mongoose").Types;
 
 class UserController {

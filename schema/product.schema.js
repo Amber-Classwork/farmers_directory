@@ -1,5 +1,5 @@
 const { Schema, model } = require("mongoose");
-const { deleteObjectFromS3 } = require("../utilities/s3");
+const { deleteObjectFromS3 } = require("../utilities/s3.utility");
 
 
 const productSchema = new Schema({

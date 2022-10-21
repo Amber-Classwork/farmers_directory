@@ -18,7 +18,8 @@ const userSchema = new Schema({
     email: {
         type: String, 
         unique: true,
-        required:[true, "Email is a required field"]
+        required:[true, "Email is a required field"],
+        lowercase: true,
     },
     address:{
         city: {type: String},

@@ -1,6 +1,6 @@
 const Product = require("../schema/product.schema");
 const { JSONResponse } = require("../utilities/jsonResponse");
-const { deleteObjectFromS3 } = require("../utilities/s3");
+const { deleteObjectFromS3 } = require("../utilities/s3.utility");
 
 class ProductController {
 

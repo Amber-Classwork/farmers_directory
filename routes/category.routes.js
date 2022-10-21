@@ -5,13 +5,13 @@ const Middleware = require('../middlewares/middleware');
 router
     .route("/")
     .get(CategoryController.getAllCategories)
-    .post(Middleware.isAuthenticated,Middleware.isUserOrAdmin,CategoryController.createCategory)
+    .post(Middleware.isAuthenticated,Middleware.isUserOrSuperAdmin,CategoryController.createCategory)
 
 router
     .route("/:id")
     .get(CategoryController.getCategoryById)
-    .patch(Middleware.isAuthenticated,Middleware.isUserOrAdmin,CategoryController.updateCategory)
-    .delete(Middleware.isAuthenticated,Middleware.isUserOrAdmin,CategoryController.deleteCategory);
+    .patch(Middleware.isAuthenticated,Middleware.isUserOrSuperAdmin,CategoryController.updateCategory)
+    .delete(Middleware.isAuthenticated,Middleware.isUserOrSuperAdmin,CategoryController.deleteCategory);
 
 
 
