@@ -62,6 +62,9 @@ class FarmerController {
         try{
             let data = req.body;
             if(Object.keys(data).length == 0) throw new Error("No data passed to create user profile");
+            if(data.products && !Array.isArray(data.products)){
+                  data.products = [data.products];  
+            }
             let farmer = await new Farmer(data).save();
             farmer.password = undefined;
             JSONResponse.success(res, "Farmer profile successfully created", farmer, 201);
@@ -87,8 +90,19 @@ class FarmerController {
                 return JSONResponse.success(res, "No data passed, file not updated",{}, 200);
             }
             if(data.email) data.email = data.email.toLowerCase();
-            let farmer = await Farmer.findOneAndUpdate({_id:id},data, {new:true});
+            let farmer = await Farmer.findById(id);
             if(!farmer) throw new Error("Farmer not found with the ID");
+            if(data.products && Array.isArray(data.products)){
+               data.products.forEach((product)=>{
+                  if(!farmer.products.includes(product)){
+                     farmer.products.push(product);
+                  }
+               });
+            }else if(data.products && farmer.products){
+               if(!farmer.products.includes(data.products)){
+                  farmer.products.push(products);
+               }
+            }
             JSONResponse.success(res, "Farmer updated successfully", farmer, 200);
         }catch(error){
             JSONResponse.error(res, "Unable to update farmer profile", error, 404);
