@@ -30,7 +30,7 @@ const userSchema = new Schema({
         type: String, 
         required: [true, "Password was not provided"]
     },
-    phone: {type: String, required: [true, "Phone number was not provided"]},
+    phone: {type: String},
     isSuperAdmin:{
         type: Boolean,
         default: false,
