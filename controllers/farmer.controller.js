@@ -65,6 +65,7 @@ class FarmerController {
             if(data.products && !Array.isArray(data.products)){
                   data.products = [data.products];  
             }
+            data.image = (req.file) ? req.file.location : undefined;
             let farmer = await new Farmer(data).save();
             farmer.password = undefined;
             JSONResponse.success(res, "Farmer profile successfully created", farmer, 201);
@@ -90,7 +91,11 @@ class FarmerController {
                 return JSONResponse.success(res, "No data passed, file not updated",{}, 200);
             }
             if(data.email) data.email = data.email.toLowerCase();
+            data.image = (req.file) ? req.file.location : undefined;
             let farmer = await Farmer.findById(id);
+            if(farmer.image){
+               await awsStorage.deleteObjectFromS3(farmer.image);
+            };
             if(!farmer) throw new Error("Farmer not found with the ID");
             if(data.products && Array.isArray(data.products)){
                data.products.forEach((product)=>{
@@ -103,6 +108,7 @@ class FarmerController {
                   farmer.products.push(products);
                }
             }
+            farmer = Farmer.findByIdAndUpdate(id, data, {new: true})
             JSONResponse.success(res, "Farmer updated successfully", farmer, 200);
         }catch(error){
             JSONResponse.error(res, "Unable to update farmer profile", error, 404);
@@ -122,7 +128,11 @@ class FarmerController {
          let id = req.params.id;
          if (!ObjectId.isValid(id))
             throw new Error("ID does not match any user profile in database");
-         let farmer = await Farmer.findByIdAndDelete(id);
+         let farmer = await Farmer.findById(id);
+         if(farmer.image){
+            await awsStorage.deleteObjectFromS3(farmer.image);
+         };
+         farmer = await Farmer.findByIdAndDelete(id);
          if (!farmer) throw new Error("Farmer does not exist with this ID");
          JSONResponse.success(res, "Successfully deleted farmer", farmer, 203);
       } catch (error) {
