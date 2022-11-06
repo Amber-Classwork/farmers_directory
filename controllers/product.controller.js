@@ -34,10 +34,12 @@ class ProductController {
         try{
             let id = req.params.id;
             let data = req.body;
-            if(req.file){
-                data.prod_img = req.file.location;
-            }
-            let product = await Product.findOneAndUpdate({_id: id}, data, {new:true});
+            data.prod_img = (req.file) ? req.file.location : undefined;
+            let product = await Product.findById(id);
+            if(product.prod_img){
+               await awsStorage.deleteObjectFromS3(product.prod_img);
+            };
+            product = await Product.findOneAndUpdate({_id: id}, data, {new:true});
             JSONResponse.success(res, "Successfully updated product", product, 200);
 
         }catch(error){
@@ -49,7 +51,11 @@ class ProductController {
     static deleteProduct = async(req, res, next)=>{
         try{
             let id = req.params.id;
-            let product = await Product.findOneAndDelete({_id: id});
+            let product = await Product.findById(id);
+            if(product.prod_img){
+                await awsStorage.deleteObjectFromS3(product.prod_img);
+             };
+            product = await Product.findOneAndDelete({_id: id});
             JSONResponse.success(res, "Deleted Product successfully", product, 200);
         }catch(error){
             JSONResponse.error(res,"Unable to delete product", error, 404);
