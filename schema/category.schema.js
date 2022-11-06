@@ -3,7 +3,8 @@ const {Schema, model} = require("mongoose");
 const categorySchema = new Schema({
     category_name: {
         type: String, required:[true,"A category name needs to be provided"]
-    }
+    }, 
+    category_img: {type: String}
 });
 
 
