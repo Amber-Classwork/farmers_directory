@@ -3,7 +3,7 @@ const AWS = require("aws-sdk");
 const fs = require("fs");
 const multer = require("multer");
 const multerS3 = require("multer-s3");
-const {AWS_BUCKET_NAME, AWS_ACCESS_KEY, AWS_SECRET_KEY, AWS_BUCKET_REGION} = process.env;
+const {AMZ_BUCKET_NAME, AMZ_ACCESS_KEY, AMZ_SECRET_KEY, AMZ_BUCKET_REGION} = process.env;
 
 /**
  *  Description
@@ -23,7 +23,7 @@ class AWSStorage{
      * @param {string} bucketName 
      * @param {string} region 
      */
-    constructor(accessKeyId = AWS_ACCESS_KEY, secretAccessKey=AWS_SECRET_KEY, bucketName = AWS_BUCKET_NAME, region = AWS_BUCKET_REGION){
+    constructor(accessKeyId = AMZ_ACCESS_KEY, secretAccessKey=AMZ_SECRET_KEY, bucketName = AMZ_BUCKET_NAME, region = AMZ_BUCKET_REGION){
 
 
         this._bucketName = bucketName;
@@ -58,7 +58,21 @@ class AWSStorage{
             })
         })
     }
-
+    uploadFileToFolder = (folderName) =>{
+         return multer({
+            storage: multerS3({
+                s3:this.s3,
+                bucket:this._bucketName,
+                metadata: (req, file, cb)=>{
+                    cb(null, {fieldName: file.fieldname})
+                },
+                key:(req, file, cb)=>{
+                    cb(null, folderName + "/" + Date.now().toString() + '-' + file.originalname);
+                }
+        
+            })
+         })   
+    }
 
     /**
      * ### Description
@@ -69,21 +83,21 @@ class AWSStorage{
      */
     deleteObjectFromS3 = async (location)=>{
         if(!location) return Promise.reject(new Error("No location was specified"))
-        let objectName = location.split('/').slice(-1)[0];
-        
+        let objectName = location.split("/").slice(-2).join("/");
+        console.log(objectName);
         const params = {
-            Bucket : bucketName,
+            Bucket : this._bucketName,
             Key: objectName,
         }
         try{
             // checks to see if there is any errors with the file metadata.
-            await s3.headObject(params).promise();
+            await this.s3.headObject(params).promise();
 
-            await s3.deleteObject(params).promise();
+            await this.s3.deleteObject(params).promise();
             return Promise.resolve("Object successfully deleted");
 
         }catch(error){
-            return Promise.reject(new Error("File not found Error : " + error.code));
+            return Promise.reject(new Error("File not found Error : " + error));
         }
     }
 }
