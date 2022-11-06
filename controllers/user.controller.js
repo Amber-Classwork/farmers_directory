@@ -1,6 +1,7 @@
 const User = require("../schema/user.schema");
 const { JSONResponse } = require("../utilities/jsonResponse");
 const { generateJWTToken } = require("../utilities/tokenGenerator");
+const awsStorage = require("../utilities/s3.utility");
 
 const { ObjectId } = require("mongoose").Types;
 
@@ -64,7 +65,7 @@ class UserController {
             let data = req.body;
             if(Object.keys(data).length == 0) throw new Error("No data passed to create user profile");
             data.image = (req.file) ? req.file.location : undefined;
-            let user = await new User(data)
+            let user = new User(data);
             let duplicate = await user.checkDupe();
             if(duplicate) throw new Error("Duplicate Entry already found with this data");
             await user.save();
@@ -89,11 +90,15 @@ class UserController {
             // not letting user update password at this route;
             if(data.password) data.password = undefined;
             data.image = (req.file) ? req.file.location : undefined;
+            let user = await User.findById(id);
             if(!ObjectId.isValid(id)) throw new Error("Invalid ID was passed as a parameter");
             if(Object.keys(data).length == 0) {
                 return JSONResponse.success(res, "No data passed, file not updated",{}, 200);
             }
-            let user = await User.findOneAndUpdate({_id:id},data, {new:true});
+            if(user.image){
+               await awsStorage.deleteObjectFromS3(user.image);
+            };
+            user = await User.findOneAndUpdate({_id:id},data, {new:true});
             if(!user) throw new Error("User not found with the ID");
             JSONResponse.success(res, "User updated successfully", user, 200);
         }catch(error){
@@ -114,7 +119,11 @@ class UserController {
          let id = req.params.id;
          if (!ObjectId.isValid(id))
             throw new Error("ID does not match any user profile in database");
-         let user = await User.findByIdAndDelete(id);
+         let user = await User.findById(id);
+         if(user.image){
+            await awsStorage.deleteObjectFromS3(user.image);
+         };
+         user = await findByIdAndDelete(id);
          if (!user) throw new Error("User does not exist with this ID");
          JSONResponse.success(res, "Successfully deleted user", user, 203);
       } catch (error) {
