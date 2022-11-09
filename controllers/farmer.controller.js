@@ -43,6 +43,9 @@ class FarmerController {
     */
    static getAllFarmers = async (req, res, next) => {
       try {
+         if(req.query.productID){
+            return this.getFarmersByProduct;
+         }else if(Object.keys(req.query) > 0) throw new Error("Incorrect query parameter")
          let Farmers = await Farmer.find();
          JSONResponse.success(res,"Retrieved all Farmers successfully",Farmers,201);
       } catch (error) {
@@ -87,9 +90,6 @@ class FarmerController {
             let data = req.body;
             let id = req.params.id;
             if(!ObjectId.isValid(id)) throw new Error("Invalid ID was passed as a parameter");
-            if(Object.keys(data).length == 0) {
-                return JSONResponse.success(res, "No data passed, file not updated",{}, 200);
-            }
             if(data.email) data.email = data.email.toLowerCase();
             data.image = (req.file) ? req.file.location : undefined;
             let farmer = await Farmer.findById(id);
@@ -108,7 +108,7 @@ class FarmerController {
                   farmer.products.push(products);
                }
             }
-            farmer = Farmer.findByIdAndUpdate(id, data, {new: true})
+            farmer = await Farmer.findByIdAndUpdate(id, data, {new: true});
             JSONResponse.success(res, "Farmer updated successfully", farmer, 200);
         }catch(error){
             JSONResponse.error(res, "Unable to update farmer profile", error, 404);
@@ -161,6 +161,15 @@ class FarmerController {
          JSONResponse.error(res, "Unable to find farmer", error, 404);
       }
    };
+
+   static getFarmersByProduct = async (req, res, next, productID) => {
+      try{
+         let farmers = await Farmer.find({_id: productID});
+         JSONResponse.success(res, "Retrieved farmers that matches product", farmers, 200);
+      }catch(error){
+         JSONResponse.error(res,"Unable to retrieve Farmers", error, 404);
+      }
+   }
 }
 
 module.exports = FarmerController;

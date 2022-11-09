@@ -47,7 +47,10 @@ const farmerSchema = new Schema({
         type: String,
         required: [true, "ID must be present in order to be valid"]
     },
-    products: [{type:Schema.Types.ObjectId, ref:"Product"}]
+    products: [
+        {type:Schema.Types.ObjectId, ref:"Product", default: []},
+        
+    ]
 
 });
 
