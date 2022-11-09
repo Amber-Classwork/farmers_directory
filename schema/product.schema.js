@@ -9,7 +9,7 @@ const productSchema = new Schema({
     category:{
         type: Schema.Types.ObjectId, ref: "Category"
     },
-    isInSeason: {type: Boolean, default: false}
+    inSeason: {type: Boolean, default: false}
 
 });
 
