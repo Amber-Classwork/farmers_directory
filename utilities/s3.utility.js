@@ -82,13 +82,14 @@ class AWSStorage{
      * @returns Promise
      */
     deleteObjectFromS3 = async (location)=>{
-        if(!location) return Promise.reject(new Error("No location was specified"))
+        if(!location) return Promise.reject(new Error("No location was specified"));
         let objectName = location.split("/").slice(-2).join("/");
         const params = {
             Bucket : this._bucketName,
             Key: objectName,
         }
         try{
+
             // checks to see if there is any errors with the file metadata.
             await this.s3.headObject(params).promise();
 
