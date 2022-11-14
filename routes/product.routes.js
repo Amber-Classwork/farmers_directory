@@ -11,7 +11,7 @@ router
 router
     .route("/:id")
     .get(ProductController.getProductById)
-    .patch(Middleware.isAuthenticated, Middleware.isSuperAdmin,uploadFileToFolder("Products").single("image"),ProductController.updateProduct)
+    .patch(Middleware.isAuthenticated, Middleware.isSuperAdmin,uploadFileToFolder("Products").single("prod_img"),ProductController.updateProduct)
     .delete(Middleware.isAuthenticated, Middleware.isSuperAdmin,ProductController.deleteProduct)
 
 

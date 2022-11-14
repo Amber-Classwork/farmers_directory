@@ -1,6 +1,6 @@
 const Product = require("../schema/product.schema");
 const { JSONResponse } = require("../utilities/jsonResponse");
-const { deleteObjectFromS3 } = require("../utilities/s3.utility");
+const awsStorage = require("../utilities/s3.utility");
 
 class ProductController {
 
@@ -14,7 +14,7 @@ class ProductController {
             JSONResponse.success(res, "Successfully created product", product, 200);
         }catch(error){
             if(req.file){
-                deleteObjectFromS3(req.file.location);
+                awsStorage.deleteObjectFromS3(req.file.location);
             }
             JSONResponse.error(res, "Unable to create products", error, 400);
         }
@@ -41,8 +41,10 @@ class ProductController {
             let product = await Product.findById(id);
             if(!product) throw new Error("Product not found");
             if(data.prod_img && product.prod_img){
-               await deleteObjectFromS3(product.prod_img);
+               await awsStorage.deleteObjectFromS3(product.prod_img);
             };
+            console.log(data);
+            console.log(product);
             product = await Product.findOneAndUpdate({_id: id}, data, {new:true});
             JSONResponse.success(res, "Successfully updated product", product, 200);
 
@@ -59,7 +61,7 @@ class ProductController {
             if(!product) throw new Error("Product not found with that ID");
 
             if(product.prod_img){
-                await deleteObjectFromS3(product.prod_img);
+                await awsStorage.deleteObjectFromS3(product.prod_img);
              };
             product = await Product.findOneAndDelete({_id: id});
             JSONResponse.success(res, "Deleted Product successfully", product, 200);

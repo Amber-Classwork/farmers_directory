@@ -33,25 +33,6 @@ productSchema.post(/^find/, function(doc){
 
 });
 
-productSchema.pre("findOneAndDelete", async function( next){
-    await getDocumentFromQueryAndDeleteImage(this)
-    next()
- 
-});
-
-productSchema.pre("findOneAndUpdate", async function(){
-    await getDocumentFromQueryAndDeleteImage(this);
-})
-
-
-async function getDocumentFromQueryAndDeleteImage(query){
-    let doc = await query.model.findOne(query.getQuery());
-    if (!doc) return Promise.reject(new Error("No user found with this ID"));
-    
-    if(doc.prod_img){
-        await deleteObjectFromS3(doc.prod_img)
-    }
-}
 productSchema.methods.checkDupe = function () {
 	return new Promise(async (resolve, reject) => {
 		const dupe = await model('Product')
