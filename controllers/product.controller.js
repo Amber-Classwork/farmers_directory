@@ -39,7 +39,8 @@ class ProductController {
             let data = req.body;
             data.prod_img = (req.file) ? req.file.location : undefined;
             let product = await Product.findById(id);
-            if(product.prod_img){
+            if(!product) throw new Error("Product not found");
+            if(data.prod_img && product.prod_img){
                await deleteObjectFromS3(product.prod_img);
             };
             product = await Product.findOneAndUpdate({_id: id}, data, {new:true});
@@ -55,7 +56,7 @@ class ProductController {
         try{
             let id = req.params.id;
             let product = await Product.findById(id);
-            if(!product) throw new Error("Product not found with that ID")
+            if(!product) throw new Error("Product not found with that ID");
 
             if(product.prod_img){
                 await deleteObjectFromS3(product.prod_img);

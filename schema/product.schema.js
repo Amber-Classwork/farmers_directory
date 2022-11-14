@@ -4,7 +4,7 @@ const { deleteObjectFromS3 } = require("../utilities/s3.utility");
 
 const productSchema = new Schema({
 
-    prod_name: {type: String, required: [true,"Product name is a required property"]},
+    prod_name: {type: String, required: [true,"Product name is a required property"], unique: true},
     prod_img: {type: String},
     category:{
         type: Schema.Types.ObjectId, ref: "Category"
@@ -51,6 +51,16 @@ async function getDocumentFromQueryAndDeleteImage(query){
     if(doc.prod_img){
         await deleteObjectFromS3(doc.prod_img)
     }
+}
+productSchema.methods.checkDupe = function () {
+	return new Promise(async (resolve, reject) => {
+		const dupe = await model('Product')
+			.find({ prod_name: this.prod_name})
+			.catch((err) => {
+				reject(err)
+			})
+		resolve(dupe.length > 0)
+	})
 }
 
 module.exports = model("Product", productSchema);
