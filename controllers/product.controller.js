@@ -40,7 +40,7 @@ class ProductController {
             data.prod_img = (req.file) ? req.file.location : undefined;
             let product = await Product.findById(id);
             if(product.prod_img){
-               await awsStorage.deleteObjectFromS3(product.prod_img);
+               await deleteObjectFromS3(product.prod_img);
             };
             product = await Product.findOneAndUpdate({_id: id}, data, {new:true});
             JSONResponse.success(res, "Successfully updated product", product, 200);
@@ -58,7 +58,7 @@ class ProductController {
             if(!product) throw new Error("Product not found with that ID")
 
             if(product.prod_img){
-                await awsStorage.deleteObjectFromS3(product.prod_img);
+                await deleteObjectFromS3(product.prod_img);
              };
             product = await Product.findOneAndDelete({_id: id});
             JSONResponse.success(res, "Deleted Product successfully", product, 200);
