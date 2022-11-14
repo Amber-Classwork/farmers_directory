@@ -84,7 +84,6 @@ class AWSStorage{
     deleteObjectFromS3 = async (location)=>{
         if(!location) return Promise.reject(new Error("No location was specified"))
         let objectName = location.split("/").slice(-2).join("/");
-        console.log(objectName);
         const params = {
             Bucket : this._bucketName,
             Key: objectName,
