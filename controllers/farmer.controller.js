@@ -93,22 +93,29 @@ class FarmerController {
             if(data.email) data.email = data.email.toLowerCase();
             data.image = (req.file) ? req.file.location : undefined;
             let farmer = await Farmer.findById(id);
-            if(farmer.image){
+            console.log(farmer.products);
+            
+            if(!farmer) throw new Error("Farmer not found with the ID");
+            if(farmer.image && data.image){
                await awsStorage.deleteObjectFromS3(farmer.image);
             };
-            if(!farmer) throw new Error("Farmer not found with the ID");
+
             if(data.products && Array.isArray(data.products)){
                data.products.forEach((product)=>{
-                  if(!farmer.products.includes(product)){
-                     farmer.products.push(product);
+                  if(farmer.products){
+                     if(!farmer.products.includes(product)){
+                        farmer.products.push(product);
+                     }
+                  }else{
+                     farmer.products = data.products
                   }
                });
             }else if(data.products && farmer.products){
                if(!farmer.products.includes(data.products)){
-                  farmer.products.push(products);
+                  farmer.products.push(data.products);
                }
             }
-            farmer = await Farmer.findByIdAndUpdate(id, data, {new: true});
+            farmer = await Farmer.findByIdAndUpdate(id, farmer, {new: true});
             JSONResponse.success(res, "Farmer updated successfully", farmer, 200);
         }catch(error){
             JSONResponse.error(res, "Unable to update farmer profile", error, 404);
