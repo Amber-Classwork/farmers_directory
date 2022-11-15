@@ -24,7 +24,7 @@ class FarmerController {
          JSONResponse.success(
             res,
             "Farmer is authenticated successfully",
-            { farmer, token },
+            { farmer:farmer.populate("products"), token },
             200
          );
       } catch (error) {
@@ -46,8 +46,8 @@ class FarmerController {
          if(req.query.productID){
             return this.getFarmersByProduct;
          }else if(Object.keys(req.query) > 0) throw new Error("Incorrect query parameter")
-         let Farmers = await Farmer.find();
-         JSONResponse.success(res,"Retrieved all Farmers successfully",Farmers,201);
+         let farmer = await Farmer.find().populate("products");
+         JSONResponse.success(res,"Retrieved all Farmers successfully",farmer,201);
       } catch (error) {
          JSONResponse.error(res, "Error Retrieving farmers profile", error, 404);
       }
@@ -69,9 +69,9 @@ class FarmerController {
                   data.products = [data.products];  
             }
             data.image = (req.file) ? req.file.location : undefined;
-            let farmer = await new Farmer(data).save();
+            let farmer = await (await new Farmer(data).save()).populate("products");
             farmer.password = undefined;
-            JSONResponse.success(res, "Farmer profile successfully created", farmer, 201);
+            JSONResponse.success(res, "Farmer profile successfully created",farmer, 201);
         }catch(error){
             JSONResponse.error(res, "Error creating farmer profile", error, 400);
         }
@@ -114,7 +114,7 @@ class FarmerController {
                   farmer.products.push(data.products);
                }
             }
-            farmer = await Farmer.findByIdAndUpdate(id, data, {new: true});
+            farmer = await Farmer.findByIdAndUpdate(id, data, {new: true}).populate("products");
             JSONResponse.success(res, "Farmer updated successfully", farmer, 200);
         }catch(error){
             JSONResponse.error(res, "Unable to update farmer profile", error, 404);
@@ -138,7 +138,7 @@ class FarmerController {
          if(farmer.image){
             await awsStorage.deleteObjectFromS3(farmer.image);
          };
-         farmer = await Farmer.findByIdAndDelete(id);
+         farmer = await Farmer.findByIdAndDelete(id).populate("products");
          if (!farmer) throw new Error("Farmer does not exist with this ID");
          JSONResponse.success(res, "Successfully deleted farmer", farmer, 203);
       } catch (error) {
@@ -159,7 +159,7 @@ class FarmerController {
          let id = req.params.id;
          if (!ObjectId.isValid(id))
             throw new Error("Id is not a valid user profile in database");
-         let farmer = await Farmer.findById(id);
+         let farmer = await Farmer.findById(id).populate("products");
          if (!farmer) throw new Error("Farmer not found with this id");
          farmer.password = undefined;
          JSONResponse.success(res, "Retrieved farmer info", farmer, 200);
@@ -171,7 +171,7 @@ class FarmerController {
    static getFarmersByProduct = async (req, res, next, productID) => {
       try{
          let farmers = await Farmer.find({_id: productID});
-         JSONResponse.success(res, "Retrieved farmers that matches product", farmers, 200);
+         JSONResponse.success(res, "Retrieved farmers that matches product",farmer, 200);
       }catch(error){
          JSONResponse.error(res,"Unable to retrieve Farmers", error, 404);
       }
