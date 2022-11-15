@@ -93,7 +93,6 @@ class FarmerController {
             if(data.email) data.email = data.email.toLowerCase();
             data.image = (req.file) ? req.file.location : undefined;
             let farmer = await Farmer.findById(id);
-            console.log(farmer.products);
             
             if(!farmer) throw new Error("Farmer not found with the ID");
             if(farmer.image && data.image){
