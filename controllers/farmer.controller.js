@@ -114,7 +114,7 @@ class FarmerController {
                   farmer.products.push(data.products);
                }
             }
-            farmer = await Farmer.findByIdAndUpdate(id, farmer, {new: true});
+            farmer = await Farmer.findByIdAndUpdate(id, data, {new: true});
             JSONResponse.success(res, "Farmer updated successfully", farmer, 200);
         }catch(error){
             JSONResponse.error(res, "Unable to update farmer profile", error, 404);
