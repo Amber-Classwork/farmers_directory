@@ -5,12 +5,12 @@ const awsStorage = require('../utilities/s3.utility');
 router
     .route("/")
     .get(CategoryController.getAllCategories)
-    .post(Middleware.isAuthenticated,Middleware.isUserOrSuperAdmin,awsStorage.uploadFileToFolder("Categories").single("categoryImg"),CategoryController.createCategory)
+    .post(Middleware.isAuthenticated,Middleware.isUserOrSuperAdmin,awsStorage.uploadFileToFolder("Categories").single("category_img"),CategoryController.createCategory)
 
 router
     .route("/:id")
     .get(CategoryController.getCategoryById)
-    .patch(Middleware.isAuthenticated,Middleware.isUserOrSuperAdmin,awsStorage.uploadFileToFolder("Categories").single("categoryImg"),CategoryController.updateCategory)
+    .patch(Middleware.isAuthenticated,Middleware.isUserOrSuperAdmin,awsStorage.uploadFileToFolder("Categories").single("category_img"),CategoryController.updateCategory)
     .delete(Middleware.isAuthenticated,Middleware.isUserOrSuperAdmin,CategoryController.deleteCategory);
 
 
