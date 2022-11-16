@@ -9,12 +9,12 @@ router
     .post(FarmerController.authenticate)
 router
     .route("/")
-    .get(Middleware.isAuthenticated,Middleware.isUserOrSuperAdmin,awsStorage.uploadFileToFolder("User-Profiles").single("image"),FarmerController.getAllFarmers)
-    .post(FarmerController.createFarmerProfile)
+    .get(Middleware.isAuthenticated,FarmerController.getAllFarmers)
+    .post(FarmerController.createFarmerProfile,awsStorage.uploadFileToFolder("User-Profiles").single("image"))
     
 router
     .route("/:id")
-    .get(Middleware.isAuthenticated,Middleware.isUserOrSuperAdmin,FarmerController.getFarmerProfile)
+    .get(Middleware.isAuthenticated,FarmerController.getFarmerProfile)
     .patch(Middleware.isAuthenticated,Middleware.isUserOrSuperAdmin,awsStorage.uploadFileToFolder("User-Profiles").single("image"),FarmerController.updateFarmerProfile)
     .delete(Middleware.isAuthenticated,Middleware.isUserOrSuperAdmin,FarmerController.deleteFarmerProfile)
     
