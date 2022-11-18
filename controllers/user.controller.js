@@ -91,15 +91,15 @@ class UserController {
             if(data.password) data.password = undefined;
             data.image = (req.file) ? req.file.location : undefined;
             let user = await User.findById(id);
+            if(!user) throw new Error("User not found with the ID");
             if(!ObjectId.isValid(id)) throw new Error("Invalid ID was passed as a parameter");
             if(Object.keys(data).length == 0) {
                 return JSONResponse.success(res, "No data passed, file not updated",{}, 200);
             }
-            if(user.image){
+            if(data.image && user.image){
                await awsStorage.deleteObjectFromS3(user.image);
             };
             user = await User.findOneAndUpdate({_id:id},data, {new:true});
-            if(!user) throw new Error("User not found with the ID");
             JSONResponse.success(res, "User updated successfully", user, 200);
         }catch(error){
             JSONResponse.error(res, "Unable to update user profile", error, 404);
