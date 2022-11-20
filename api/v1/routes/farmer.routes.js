@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const FarmerController = require('../controllers/farmer.controller');
 const Middleware = require('../middlewares/middleware');
-const awsStorage = require("../utilities/s3.utility");
+const awsStorage = require("../../../utilities/s3.utility");
 
 
 router

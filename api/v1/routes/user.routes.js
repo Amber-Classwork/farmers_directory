@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const UserController = require('../controllers/user.controller');
-const awsStorage = require("../utilities/s3.utility");
+const awsStorage = require("../../../utilities/s3.utility");
 const Middleware = require('../middlewares/middleware');
 router
     .route("/")

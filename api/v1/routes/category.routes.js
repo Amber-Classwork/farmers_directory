@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const CategoryController = require('../controllers/category.controller');
 const Middleware = require('../middlewares/middleware');
-const awsStorage = require('../utilities/s3.utility');
+const awsStorage = require('../../../utilities/s3.utility');
 router
     .route("/")
     .get(CategoryController.getAllCategories)

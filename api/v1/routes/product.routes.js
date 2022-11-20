@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const ProductController = require('../controllers/product.controller');
 const Middleware = require('../middlewares/middleware');
-const { uploadFileToFolder } = require('../utilities/s3.utility');
+const { uploadFileToFolder } = require('../../../utilities/s3.utility');
 
 router
     .route("/")
