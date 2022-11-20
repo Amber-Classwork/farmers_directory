@@ -1,7 +1,7 @@
-const User = require("../schema/user.schema");
-const { JSONResponse } = require("../utilities/jsonResponse");
-const { generateJWTToken } = require("../utilities/tokenGenerator");
-const awsStorage = require("../utilities/s3.utility");
+const User = require("../../../schema/user.schema");
+const { JSONResponse } = require("../../../utilities/jsonResponse");
+const { generateJWTToken } = require("../../../utilities/tokenGenerator");
+const awsStorage = require("../../../utilities/s3.utility");
 
 const { ObjectId } = require("mongoose").Types;
 

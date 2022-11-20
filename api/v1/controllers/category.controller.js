@@ -1,6 +1,6 @@
-const Category = require("../schema/category.schema");
-const { JSONResponse } = require("../utilities/jsonResponse");
-const awsStorage = require("../utilities/s3.utility");
+const Category = require("../../../schema/category.schema");
+const { JSONResponse } = require("../../../utilities/jsonResponse");
+const awsStorage = require("../../../utilities/s3.utility");
 
 class CategoryController {
 

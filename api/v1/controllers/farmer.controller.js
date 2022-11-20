@@ -1,8 +1,8 @@
-const Farmer = require("../schema/farmer.schema");
-const { JSONResponse } = require("../utilities/jsonResponse");
-const { generateJWTToken } = require("../utilities/tokenGenerator");
+const Farmer = require("../../../schema/farmer.schema");
+const { JSONResponse } = require("../../../utilities/jsonResponse");
+const { generateJWTToken } = require("../../../utilities/tokenGenerator");
 const { ObjectId } = require("mongoose").Types;
-const awsStorage = require("../utilities/s3.utility");
+const awsStorage = require("../../../utilities/s3.utility");
 class FarmerController {
 
 

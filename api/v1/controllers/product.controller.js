@@ -1,6 +1,6 @@
-const Product = require("../schema/product.schema");
-const { JSONResponse } = require("../utilities/jsonResponse");
-const awsStorage = require("../utilities/s3.utility");
+const Product = require("../../../schema/product.schema");
+const { JSONResponse } = require("../../../utilities/jsonResponse");
+const awsStorage = require("../../../utilities/s3.utility");
 
 class ProductController {
 
