@@ -1,4 +1,4 @@
-const { JSONResponse } = require("../utilities/jsonResponse");
+const { JSONResponse } = require("../../../utilities/jsonResponse");
 const JWT = require("jsonwebtoken");
 
 class Middleware{
