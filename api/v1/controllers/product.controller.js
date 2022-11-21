@@ -10,7 +10,7 @@ class ProductController {
             if(req.file){
                 data.prod_img = req.file.location;
             }
-            let product = await (await new Product(data).save()).populate("category");
+            let product = await (await new Product(data).save());
             JSONResponse.success(res, "Successfully created product", product, 200);
         }catch(error){
             if(req.file){
@@ -23,7 +23,7 @@ class ProductController {
 
     static getAllProducts = async(req, res, next)=>{
         try{
-            let product = await Product.find().populate("category");
+            let product = await Product.find();
             if(req.query.categoryID){
                 return getProductsByCategory(req, res, req.query.categoryID)
             }else if(Object.keys(req.query).length > 0) throw new Error("Not a valid query parameters");
@@ -43,7 +43,7 @@ class ProductController {
             if(data.prod_img && product.prod_img){
                await awsStorage.deleteObjectFromS3(product.prod_img);
             };
-            product = await Product.findOneAndUpdate({_id: id}, data, {new:true}).populate("category");
+            product = await Product.findOneAndUpdate({_id: id}, data, {new:true});
             JSONResponse.success(res, "Successfully updated product", product, 200);
 
         }catch(error){
@@ -61,7 +61,7 @@ class ProductController {
             if(product.prod_img){
                 await awsStorage.deleteObjectFromS3(product.prod_img);
              };
-            product = await Product.findOneAndDelete({_id: id}).populate("category");
+            product = await Product.findOneAndDelete({_id: id});
             JSONResponse.success(res, "Deleted Product successfully", product, 200);
         }catch(error){
             JSONResponse.error(res,"Unable to delete product", error, 404);
@@ -71,7 +71,7 @@ class ProductController {
     static getProductById = async(req, res, next)=>{
         try{
             let id = req.params.id;
-            let product = await Product.findById(id).populate("category");
+            let product = await Product.findById(id);
             if(!product) throw new Error("Product not found with that ID")
             JSONResponse.success(res, "Product successfully retrieved", product, 200);
         }catch(error){
@@ -82,7 +82,7 @@ class ProductController {
     static getProductsByCategory = async(req, res, categoryID)=>{
         try{
             if(categoryID){
-                let products = await Product.find({category: categoryID}).populate("category");
+                let products = await Product.find({category: categoryID});
                 JSONResponse.success(res, "Products successfully retrieved", products, 200);
             }
             
