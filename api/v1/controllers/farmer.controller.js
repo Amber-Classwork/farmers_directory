@@ -10,7 +10,7 @@ class FarmerController {
       try {
          let { email, password } = req.body;
          if(email) email = email.toLowerCase();
-         let farmer = await Farmer.findOne({ email: email });
+         let farmer = await Farmer.findOne({ email: email }).populate("products");
          if (!farmer)
             throw new Error("No farmer present which matches the email");
          let passCheck = await farmer.isCorrectPassword(password);
@@ -24,7 +24,7 @@ class FarmerController {
          JSONResponse.success(
             res,
             "Farmer is authenticated successfully",
-            { farmer:farmer.populate("products"), token },
+            { data, token },
             200
          );
       } catch (error) {
