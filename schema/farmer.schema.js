@@ -2,11 +2,11 @@ const {model, Schema} = require("mongoose");
 const bcrypt = require("bcrypt");
 
 const farmerSchema = new Schema({
-    fname : {
+    first_name : {
         type: String, 
         unique: [true, "name already exist in the database"]
     }, 
-    lname : {
+    last_name : {
         type: String, 
         required: [true, "Last name is a required field"]
     }, 
