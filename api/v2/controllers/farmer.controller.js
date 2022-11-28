@@ -98,8 +98,12 @@ class FarmerController {
             if(farmer.image && data.image){
                await awsStorage.deleteObjectFromS3(farmer.image);
             };
+            if(data.products && data.products.contains("[") && data.products.contains("]")){
+               data.products = JSON.parse(data.products);
+            }
 
             if(data.products && Array.isArray(data.products)){
+
                data.products.forEach((product)=>{
                   if(farmer.products){
                      if(!farmer.products.includes(product)){
