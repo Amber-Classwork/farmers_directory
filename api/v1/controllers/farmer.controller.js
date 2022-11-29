@@ -89,15 +89,22 @@ class FarmerController {
         try{
             let data = req.body;
             let id = req.params.id;
+
             if(!ObjectId.isValid(id)) throw new Error("Invalid ID was passed as a parameter");
             if(data.email) data.email = data.email.toLowerCase();
             data.image = (req.file) ? req.file.location : undefined;
             let farmer = await Farmer.findById(id);
-            
             if(!farmer) throw new Error("Farmer not found with the ID");
             if(farmer.image && data.image){
                await awsStorage.deleteObjectFromS3(farmer.image);
             };
+            if(data.products){
+               try{
+                  data.products = JSON.parse(data.products);
+               }catch(error){
+                  return null;
+               }
+            }
 
             if(data.products && Array.isArray(data.products)){
                data.products.forEach((product)=>{
