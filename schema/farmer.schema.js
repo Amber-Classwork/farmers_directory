@@ -43,10 +43,6 @@ const farmerSchema = new Schema({
     },
     phone: {type: String},
 
-    id_number: {
-        type: String,
-        required: [true, "ID must be present in order to be valid"]
-    },
     products: [
         {type:Schema.Types.ObjectId, ref:"Product", default: []},
         
